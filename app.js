@@ -1,7 +1,7 @@
 (function () {
   "use strict";
   const D = window.ANCHORS_DATA;
-  const VERSION = "2.0.0";
+  const VERSION = "2.1.0";
   const KEY = "anchors.v1";
   const SLOTS = [
     { id: "morning", name: "Morning", from: 0 },
@@ -258,6 +258,11 @@
     return null;
   }
   const MEALS = [["b", "Breakfast"], ["l", "Lunch"], ["d", "Dinner"], ["s", "Snack"]];
+  // [key, tile name, tile line, question, hint, placeholder, toast]
+  const SOFT = [
+    ["people", "People", "one real moment", "Who did you spend real time with?", "A walk, a meal, a call. Ten minutes counts.", "A walk after dinner", "That counts. It's in your log."],
+    ["fun", "For fun", "just because", "What did you do just because you like it?", "No goal and no improving. It still counts.", "Watched a film, phone in another room", "Good. Joy is part of the plan."],
+  ];
   function renderToday() {
     renderDayHead();
     const date = view.day, t = todayIso(), d = day(date), h = d.h || {};
@@ -375,6 +380,8 @@
       '<button class="wk' + (swims >= 2 ? " ok" : "") + '" data-go="body" data-anchor-to="swimPanel"><span class="eyebrow">Swim</span><span class="v">' + swims + '/2</span><span class="small muted">this week</span></button>' +
       '<button class="wk' + (ships ? " ok" : isFri ? " due" : "") + '" data-ship="1"><span class="eyebrow">Ship</span><span class="v">' + (ships ? "✓ " + ships : "–") + '</span><span class="small muted">' + (isFri && !ships ? "due today" : "by Friday") + '</span></button>' +
       '<button class="wk' + (wi.length ? " ok" : isSun ? " due" : "") + '" data-weigh="1"><span class="eyebrow">Weigh-in</span><span class="v">' + (wi.length ? esc(wi[wi.length - 1]) : "–") + '</span><span class="small muted">' + (isSun && !wi.length ? "this morning" : "Sunday") + '</span></button>' +
+      // once a week each, and never late: these two are not duties
+      SOFT.map(([k, name, sub]) => { const n = wd.filter(x => String(day(x)[k] || "").trim()).length; return '<button class="wk half' + (n ? " ok" : "") + '" data-weekly="' + k + '"><span class="eyebrow">' + name + '</span><span class="v">' + (n ? "✓ " + n : "–") + '</span><span class="small muted">' + sub + '</span></button>'; }).join("") +
       '</div><div id="weeklyEdit"></div>';
     renderWeeklyEdit();
 
@@ -430,6 +437,12 @@
       box.innerHTML = '<div class="panel"><div class="field"><label for="weighIn">Weight this morning (kg)</label><span class="hint">Once a week, Sunday, before breakfast. The trend matters, not the day.</span><input type="number" id="weighIn" step="0.1" inputmode="decimal" placeholder="kg"></div><div class="row"><button class="btn small" id="weighSave">Save</button><button class="btn ghost small" id="editClose">Close</button></div></div>';
       $("weighIn").value = d.weight || "";
       $("weighSave").onclick = () => { const v = parseFloat($("weighIn").value); edit(date, x => { if (v > 20 && v < 250) x.weight = Math.round(v * 10) / 10; else delete x.weight; }); weeklyEditMode = null; toast("Saved"); renderToday(); };
+      $("editClose").onclick = () => { weeklyEditMode = null; renderToday(); };
+    } else if (SOFT.some(x => x[0] === weeklyEditMode)) {
+      const [k, , , q, hint, ph, msg] = SOFT.find(x => x[0] === weeklyEditMode);
+      box.innerHTML = '<div class="panel"><div class="field"><label for="softIn">' + q + '</label><span class="hint">' + hint + '</span><input type="text" id="softIn" placeholder="' + esc(ph) + '"></div><div class="row"><button class="btn small" id="softSave">Save</button><button class="btn ghost small" id="editClose">Close</button></div></div>';
+      $("softIn").value = d[k] || "";
+      $("softSave").onclick = () => { const v = $("softIn").value.trim(); edit(date, x => { if (v) x[k] = v; else delete x[k]; }); weeklyEditMode = null; toast(v ? msg : "Cleared"); renderToday(); };
       $("editClose").onclick = () => { weeklyEditMode = null; renderToday(); };
     } else box.innerHTML = "";
   }
@@ -600,6 +613,9 @@
     $("wWeight").textContent = wi.length ? wi[wi.length - 1] + " kg" : "–";
     const wins = wd.filter(x => (day(x).j || {}).win);
     $("weekWins").innerHTML = wins.length ? wins.map(x => '<li><span class="d">' + DOW[dow(x)] + '</span><span>' + esc(day(x).j.win) + '</span></li>').join("") : '<li class="muted">No wins written yet. They come from the Win line in the journal.</li>';
+    const soft = [];
+    wd.forEach(x => SOFT.forEach(([k, name]) => { if (day(x)[k]) soft.push('<li><span class="d">' + DOW[dow(x)] + '</span><span>' + esc(day(x)[k]) + ' <span class="muted small">· ' + name.toLowerCase() + '</span></span></li>'); }));
+    $("weekSoft").innerHTML = soft.join("") || '<li class="muted">One real moment with someone, and one thing just for fun. Once a week each is enough. Tap the tiles on Today.</li>';
     $("weekShips").innerHTML = ships.length ? ships.map(x => '<li><span class="d">' + DOW[dow(x)] + '</span><span>' + esc(day(x).ship) + '</span></li>').join("") : '<li class="muted">Nothing shipped yet. Friday is the day. Tap Ship on Today.</li>';
     // review
     const r = weekRec(m), next = addDays(m, 7);
@@ -696,6 +712,8 @@
     const x = S.days[k] || {}, j = x.j || {}, out = [];
     if (j.win) out.push(["win", j.win]);
     if (x.ship) out.push(["shipped", x.ship]);
+    if (x.people) out.push(["people", x.people]);
+    if (x.fun) out.push(["fun", x.fun]);
     (Array.isArray(x.three) ? x.three : []).filter(i => i.done).forEach(i => out.push(["done", i.t]));
     (x.free || []).forEach(i => out.push(["did", i.name]));
     if (j.did) out.push(["did", j.did]);
@@ -731,6 +749,7 @@
     lines.push("Swims: " + swims.length + (swims.length ? " (" + swims.map(s => s.lengths + " lengths, " + (s.nonstop || "?") + " nonstop").join("; ") + ")" : ""));
     const ships = wd.filter(x => day(x).ship).map(x => DOW[dow(x)] + ": " + day(x).ship);
     lines.push("Shipped: " + (ships.length ? ships.join("; ") : "nothing"));
+    SOFT.forEach(([k, name]) => { const l = wd.filter(x => day(x)[k]).map(x => DOW[dow(x)] + ": " + day(x)[k]); lines.push(name + ": " + (l.length ? l.join("; ") : "nothing logged")); });
     const th = wd.map(x => day(x).three).filter(Array.isArray);
     const tAll = th.reduce((a, l) => a + l.length, 0);
     if (tAll) lines.push("Daily three: " + th.reduce((a, l) => a + l.filter(i => i.done).length, 0) + "/" + tAll + " done");
@@ -929,6 +948,8 @@
       if (ds.anchorTo) setTimeout(() => { const el = $(ds.anchorTo); if (el) el.scrollIntoView({ block: "start" }); }, 60);
     } else if (ds.ship) {
       weeklyEditMode = weeklyEditMode === "ship" ? null : "ship"; renderWeeklyEdit(); if (weeklyEditMode) $("shipIn").focus();
+    } else if (ds.weekly) {
+      weeklyEditMode = weeklyEditMode === ds.weekly ? null : ds.weekly; renderWeeklyEdit(); if (weeklyEditMode) $("softIn").focus();
     } else if (ds.weigh) {
       weeklyEditMode = weeklyEditMode === "weigh" ? null : "weigh"; renderWeeklyEdit(); if (weeklyEditMode) $("weighIn").focus();
     } else if (ds.stuck) {

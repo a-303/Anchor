@@ -59,6 +59,9 @@ function seed() {
   out.objective = await p.inputValue('#objective'); out.proof = await p.textContent('#proof');
   await p.click('[data-tmins="10"]'); await shot('06-stuck'); await p.click('#timerStart'); await p.waitForTimeout(1100);
   await shot('07-timer'); await p.click('#timerStop');
+  await p.click('[data-weekly="people"]'); await p.fill('#softIn', 'Walk after dinner'); await p.click('#softSave');
+  await p.click('[data-weekly="fun"]'); await p.fill('#softIn', 'A film'); await p.click('#softSave');
+  out.soft = await p.locator('.wk.half.ok').count();
   await p.click('[data-bc="repeat"]'); out.blockAfter = await p.locator('.check-card').count();
   await p.goto(U + '#journal'); await p.waitForTimeout(200);
   out.carry = await p.textContent('#carryBtn').catch(() => null);
@@ -68,7 +71,7 @@ function seed() {
   await p.goto(U + '#week'); await p.waitForTimeout(200); await shot('10-week'); await wide('week');
   await p.click('[data-prog="trends"]'); await p.waitForTimeout(100); await shot('11-trends'); await wide('trends');
   out.headline = await p.textContent('#headline'); out.milestones = await p.locator('#milestones li').count(); out.charts = await p.locator('#pTrends svg.chart').count();
-  await p.click('[data-prog="log"]'); await shot('12-log'); await wide('log'); out.logDays = await p.locator('.dayb').count();
+  await p.click('[data-prog="log"]'); await shot('12-log'); await wide('log'); out.logDays = await p.locator('.dayb').count(); out.logSoft = await p.locator('.dayb >> nth=0').textContent();
   await p.click('#logMore'); out.logDaysMore = await p.locator('.dayb').count();
   await p.click('[data-prog="trends"]'); await p.click('.hrow >> nth=2'); out.weekJump = await p.textContent('#weekTitle');
   await p.goto(U + '#more'); await p.waitForTimeout(200);

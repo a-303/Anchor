@@ -1,6 +1,6 @@
 // Offline-first: the whole app is cached on install and served from the cache.
 // Bump CACHE when any file changes so phones pick up the new version.
-const CACHE = "anchors-2.0.0";
+const CACHE = "anchors-2.1.0";
 const FILES = [
   "./", "index.html", "styles.css", "app.js", "data.js", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png", "icons/maskable-512.png"

@@ -127,8 +127,10 @@ button:focus-visible, textarea:focus-visible, input:focus-visible, a:focus-visib
 .seg button[aria-pressed="true"][data-v="missed"] { background: var(--missed); border-color: var(--missed-ink); color: var(--missed-ink); }
 
 /* weekly strip */
-.weekly { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.weekly { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
 .wk { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; text-align: left; min-width: 0; }
+.wk { grid-column: span 2; }
+.wk.half { grid-column: span 3; }
 .wk b { font-size: 0.95rem; }
 .wk .v { font-family: var(--font-mono); font-size: 1.15rem; font-variant-numeric: tabular-nums; }
 .wk.ok .v { color: var(--accent); }
