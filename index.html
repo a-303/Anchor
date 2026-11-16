@@ -1,0 +1,489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Anchors</title>
+<meta name="description" content="Daily anchors: one next thing at a time.">
+<meta name="theme-color" content="#F2F5F4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0D1412" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Anchors">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="wrap" id="app">
+  <div id="banner" class="banner" hidden></div>
+
+  <!-- TODAY -->
+  <section id="v-today" class="view" aria-label="Today">
+    <header class="head">
+      <div class="daynav">
+        <button class="navbtn prevDay" aria-label="Previous day">‹</button>
+        <div class="label">
+          <div class="eyebrow dayEyebrow">Today</div>
+          <h1 class="dayTitle">Today</h1>
+        </div>
+        <button class="navbtn nextDay" aria-label="Next day">›</button>
+      </div>
+      <div class="progress" aria-hidden="true"><i id="dayBar"></i></div>
+      <div class="meta"><span id="dayMeta"></span><span id="dayCount" class="mono"></span></div>
+    </header>
+
+    <div id="welcome"></div>
+    <div id="special"></div>
+    <div id="blockCheck"></div>
+    <div id="nextCard"></div>
+    <div id="three"></div>
+
+    <label class="minday">
+      <span class="txt"><b>Minimum day</b><br><span class="small muted" id="minDayHint">Travelling or a bad day: the minimum counts as done.</span></span>
+      <button class="toggle" role="switch" id="minDay" aria-checked="false" aria-label="Minimum day"></button>
+    </label>
+
+    <div id="slots"></div>
+    <div id="free"></div>
+    <div id="weekly"></div>
+    <div id="nextUp"></div>
+  </section>
+
+  <!-- JOURNAL -->
+  <section id="v-journal" class="view" aria-label="Journal" hidden>
+    <header class="head">
+      <div class="daynav">
+        <button class="navbtn prevDay" aria-label="Previous day">‹</button>
+        <div class="label">
+          <div class="eyebrow dayEyebrow">Today</div>
+          <h1 class="dayTitle">Today</h1>
+        </div>
+        <button class="navbtn nextDay" aria-label="Next day">›</button>
+      </div>
+      <p class="rule">Two minutes. One line is a full pass. Writing here ticks the journal.</p>
+    </header>
+    <div class="panel">
+      <div class="pair">
+        <div class="field"><label for="jSleep">Sleep (h)</label><input type="number" id="jSleep" data-j="sleep" min="0" max="14" step="0.5" inputmode="decimal" placeholder="7.5"></div>
+        <div class="field"><span class="lbl">Promises kept</span><span class="stat" id="jPromises">0/0</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="field"><label for="jLearned">Learned</label><textarea id="jLearned" data-j="learned" rows="2" placeholder="One thing I learned today"></textarea></div>
+      <div class="field"><label for="jDid">Did</label><textarea id="jDid" data-j="did" rows="2" placeholder="What I actually did"></textarea></div>
+      <div class="field"><label for="jWin">Win</label><textarea id="jWin" data-j="win" rows="2" placeholder="One win, however small"></textarea></div>
+    </div>
+    <div class="panel">
+      <div class="field">
+        <span class="lbl">Sceptic</span>
+        <span class="hint">The voice said X. The evidence today says Y.</span>
+        <label for="jVoice" class="small muted">The voice said</label>
+        <textarea id="jVoice" data-j="voice" rows="2"></textarea>
+        <label for="jEvidence" class="small muted">Evidence today</label>
+        <textarea id="jEvidence" data-j="evidence" rows="2"></textarea>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="field">
+        <span class="lbl">Tomorrow</span>
+        <span class="hint" id="jGoalHint">Three items. Tap Goal on the one that moves this week's goal.</span>
+        <div id="jCarry"></div>
+      </div>
+      <div class="tmr"><span class="n">1</span><input type="text" id="jT1" data-j="t1" aria-label="Tomorrow item 1"><button class="star" data-star="1" aria-pressed="false" aria-label="Item 1 moves the weekly goal">Goal</button></div>
+      <div class="tmr"><span class="n">2</span><input type="text" id="jT2" data-j="t2" aria-label="Tomorrow item 2"><button class="star" data-star="2" aria-pressed="false" aria-label="Item 2 moves the weekly goal">Goal</button></div>
+      <div class="tmr"><span class="n">3</span><input type="text" id="jT3" data-j="t3" aria-label="Tomorrow item 3"><button class="star" data-star="3" aria-pressed="false" aria-label="Item 3 moves the weekly goal">Goal</button></div>
+      <div class="saved" id="jSaved"></div>
+    </div>
+    <details class="panel">
+      <summary>The rest of the night</summary>
+      <ol class="steps small">
+        <li>Dim, warm lights after sunset.</li>
+        <li>Phone on the charger outside the room at <span class="tPhone">21:00</span>.</li>
+        <li>Journal (this page).</li>
+        <li>5 min of easy mobility: frog, pigeon, legs up the wall. Only positions your physio is happy with.</li>
+        <li>Breathing: 4-7-8 four times, or 5 s in and 10 s out for 3 min.</li>
+        <li>In bed with a book at <span class="tBed">22:30</span>.</li>
+        <li>Can't sleep: eyes closed, slow eye movements side to side, long exhales.</li>
+      </ol>
+    </details>
+  </section>
+
+  <!-- BODY -->
+  <section id="v-body" class="view" aria-label="Body" hidden>
+    <header class="head">
+      <div class="eyebrow" id="bodyEyebrow">Body</div>
+      <h1>Body</h1>
+    </header>
+    <div class="affirm">
+      <div class="eyebrow">Say it out loud</div>
+      <p>It's not about where you are, it's what you do next.</p>
+      <p>You are a winner.</p>
+      <p>You will have it all and be it all.</p>
+    </div>
+    <div class="panel">
+      <div class="field"><span class="lbl">How much time do you have?</span></div>
+      <div class="chips" id="timeChips" role="group" aria-label="Time available">
+        <button data-mins="5" aria-pressed="false">5 min</button>
+        <button data-mins="10" aria-pressed="false">10 min</button>
+        <button data-mins="15" aria-pressed="false">15 min</button>
+        <button data-mins="25" aria-pressed="false">Pool</button>
+      </div>
+    </div>
+    <div id="routineCard"></div>
+    <div class="panel" id="swimPanel">
+      <div class="row between">
+        <h3>Swim</h3>
+        <span class="small muted mono" id="swimWeek"></span>
+      </div>
+      <p class="small muted">Twice a week, easy. Goal before you leave: <span id="swimGoalTxt">1 km</span> without stopping.</p>
+      <div class="meter" aria-hidden="true"><i id="swimBar"></i></div>
+      <p class="small" id="swimBest"></p>
+      <div class="pair">
+        <div class="field"><label for="swimLengths">Lengths today</label><input type="number" id="swimLengths" min="0" max="200" inputmode="numeric" placeholder="20"></div>
+        <div class="field"><label for="swimNonstop">Longest without stopping</label><input type="number" id="swimNonstop" min="0" max="200" inputmode="numeric" placeholder="lengths"></div>
+      </div>
+      <div class="saved" id="swimSaved"></div>
+    </div>
+    <div class="panel">
+      <h3>Rules for the body</h3>
+      <ul class="steps small">
+        <li>Mornings are small: 5 to 15 minutes. The trainer has the hard session.</li>
+        <li>Pain at 3/10 or less that settles within 24 h is fine. Sharp pain, or worse the next morning, means step back.</li>
+        <li>Weak side first, with the extra set.</li>
+        <li>Spreading weakness or numbness, or any bladder or bowel change: call the doctor that day.</li>
+      </ul>
+    </div>
+    <details class="panel" id="poolDetails">
+      <summary>All routines <span class="muted small mono" id="poolCount"></span></summary>
+      <div class="pool" id="pool"></div>
+      <details id="addDetails">
+        <summary>Add a routine</summary>
+        <form class="form" id="addForm">
+          <div class="field"><label for="rName">Name</label><input type="text" id="rName" required placeholder="Hip and spine opener"></div>
+          <div class="field"><label for="rMin">Minutes</label><input type="number" id="rMin" min="1" max="60" value="10"></div>
+          <div class="field"><label for="rMoves">Moves, one per line</label><textarea id="rMoves" required rows="4" placeholder="Cat-cow x8&#10;90/90 hip switches x6"></textarea></div>
+          <div class="row"><button class="btn" type="submit">Add routine</button><span class="saved" id="addSaved"></span></div>
+        </form>
+      </details>
+    </details>
+  </section>
+
+  <!-- WEEK -->
+  <section id="v-week" class="view" aria-label="Progress" hidden>
+    <header class="head">
+      <h1>Progress</h1>
+      <div class="seg tabs2" id="progSeg" role="group" aria-label="Progress view">
+        <button data-prog="week" aria-pressed="true">Week</button>
+        <button data-prog="trends" aria-pressed="false">Trends</button>
+        <button data-prog="log" aria-pressed="false">Log</button>
+      </div>
+    </header>
+
+    <div id="pTrends" class="sub" hidden>
+      <div class="panel">
+        <p class="small" id="whereNow"></p>
+        <div class="stats four" id="headline"></div>
+        <p class="small muted">None of these numbers can go down. A missed day only means they wait for you.</p>
+      </div>
+      <div class="panel">
+        <h3>Last six weeks</h3>
+        <div id="heat" class="heat"></div>
+        <p class="small muted">One square per day. Darker means more anchors in. Tap a row to open that week.</p>
+      </div>
+      <div class="panel">
+        <div><h3>How each anchor is holding</h3><p class="small muted">Last four weeks. The mark is the bar: 5 days in 7.</p></div>
+        <div id="holdBars" class="bars"></div>
+      </div>
+      <div class="panel"><h3>Sleep</h3><div id="sleepChart"></div></div>
+      <div class="panel"><h3>Weight</h3><div id="weightChart"></div></div>
+      <div class="panel"><h3>Swim: longest without stopping</h3><div id="swimChart"></div></div>
+      <div class="panel"><h3>Focus time per week</h3><div id="focusBars"></div></div>
+      <div class="panel">
+        <div><h3>Milestones</h3><p class="small muted">They appear by themselves as you go.</p></div>
+        <ul class="notes" id="milestones"></ul>
+      </div>
+      <div class="row"><button class="btn ghost" id="copyReport">Copy six-week report for Claude</button></div>
+    </div>
+
+    <div id="pLog" class="sub" hidden>
+      <p class="rule">Everything you actually did, newest first. On a bad day, read this before you believe the voice.</p>
+      <div id="logList" class="log"></div>
+      <button class="btn ghost" id="logMore" hidden>Show earlier days</button>
+    </div>
+
+    <div id="pWeek" class="sub">
+    <div class="head">
+      <div class="weeknav">
+        <button class="navbtn" id="prevWeek" aria-label="Previous week">‹</button>
+        <div class="label"><div class="eyebrow" id="weekEyebrow">This week</div><h2 id="weekTitle">Week</h2></div>
+        <button class="navbtn" id="nextWeek" aria-label="Next week">›</button>
+      </div>
+      <p class="rule">A habit holds at 5 days out of 7. The next block starts only when the current one holds. Repeating a block is progress.</p>
+    </div>
+    <div class="panel"><p id="weekSummary"></p></div>
+    <div class="gridwrap" id="weekGrid"></div>
+    <div class="legend">
+      <span><i class="dot full"></i>Full</span><span><i class="dot min"></i>Minimum</span><span><i class="dot missed"></i>Missed</span><span><i class="dot"></i>Not logged</span>
+    </div>
+    <div class="panel">
+      <div class="stats four">
+        <div><span class="eyebrow">Swims</span><span class="stat" id="wSwims">0/2</span></div>
+        <div><span class="eyebrow">Shipped</span><span class="stat" id="wShips">0</span></div>
+        <div><span class="eyebrow">Focus time</span><span class="stat" id="wFocus">–</span></div>
+        <div><span class="eyebrow">Weight</span><span class="stat" id="wWeight">–</span></div>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>Wins</h3>
+      <ul class="notes" id="weekWins"></ul>
+    </div>
+    <div class="panel" id="shipList">
+      <h3>Shipped</h3>
+      <ul class="notes" id="weekShips"></ul>
+    </div>
+
+    <div class="panel review" id="reviewPanel">
+      <div>
+        <div class="eyebrow" id="reviewEyebrow">Sunday review · 15 min</div>
+        <h2>Review the week</h2>
+        <p class="small muted">Reread the wins, check the goal, set the next one. Weekly reset: fresh pillowcase and towel, cut nails.</p>
+      </div>
+      <div class="field"><span class="lbl">This week's goal</span><p id="revGoal" class="muted">No goal was set for this week.</p></div>
+      <div class="seg" role="group" aria-label="Goal met">
+        <button data-goalmet="yes" data-v="full" aria-pressed="false">Met</button>
+        <button data-goalmet="partly" data-v="min" aria-pressed="false">Partly</button>
+        <button data-goalmet="no" data-v="missed" aria-pressed="false">Not yet</button>
+      </div>
+      <div class="field"><label for="qHeld">What held?</label><textarea id="qHeld" data-q="held" rows="2"></textarea></div>
+      <div class="field"><label for="qBlocked">What got in the way?</label><textarea id="qBlocked" data-q="blocked" rows="2"></textarea></div>
+      <div class="field"><label for="qChange">One change for next week</label><textarea id="qChange" data-q="change" rows="2"></textarea></div>
+      <div class="field"><label for="qNextGoal" id="nextGoalLabel">Next week's goal</label><input type="text" id="qNextGoal" placeholder="One goal that moves the model or the applications"></div>
+      <div class="row">
+        <button class="btn ghost" id="copyWeek">Copy week for Claude</button>
+        <span class="saved" id="revSaved"></span>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <!-- MORE -->
+  <section id="v-more" class="view" aria-label="More" hidden>
+    <header class="head">
+      <h1>More</h1>
+    </header>
+
+    <div class="panel firsts">
+      <div class="eyebrow">Read this first, every day</div>
+      <ol class="steps">
+        <li><b class="tPhone">21:00</b> phone on the charger outside your room.</li>
+        <li><b>Before bed</b> one line in the journal. One line is a full pass.</li>
+        <li><b class="tBed">22:30</b> in bed with a book. <b class="tWake">06:30</b> up, however short the night was.</li>
+      </ol>
+      <p class="small muted">When you want more to do, don't ask for a plan. Open Today and do the next unticked thing.</p>
+    </div>
+
+    <details class="panel">
+      <summary>How this app works</summary>
+      <ul class="steps small">
+        <li><b>Today</b> shows the one next thing in green. Tap Done or Minimum and the next one appears.</li>
+        <li><b>Full, Min, ✕</b> mean the full version, the minimum version, or missed. Tap the same button again to undo. Tap a habit's name to see what full and minimum are.</li>
+        <li><b>Your three</b> come from last night's journal. Start opens a timer on that item.</li>
+        <li><b>Stuck?</b> is the 3-minute unstick and the timer. Every timer counts as focus time.</li>
+        <li><b>Got free time?</b> hands you one thing for the time you have.</li>
+        <li><b>Journal</b>: one line at night is a full pass. The arrows let you fill in an earlier day.</li>
+        <li><b>Body</b>: one short routine for the time you have, and the swim log.</li>
+        <li><b>Progress</b>: the week grid and Sunday review, the trends, and the log of everything you did.</li>
+        <li><b>Minimum day and travel mode</b>: the minimum becomes the plan, and it still counts.</li>
+        <li><b>The day ends at 03:00</b>, so a late night still logs on the right day.</li>
+      </ul>
+    </details>
+
+    <div class="panel">
+      <div>
+        <h3>Parking lot</h3>
+        <p class="small muted">New idea, new plan, new save? Park it here. You read the lot on <span id="recheckTxt">27 Dec</span>, not before.</p>
+      </div>
+      <form class="tmr two" id="parkForm">
+        <input type="text" id="parkInput" placeholder="The idea, in one line" aria-label="Idea to park">
+        <button class="btn small" type="submit">Park</button>
+      </form>
+      <ul class="notes" id="parkList"></ul>
+    </div>
+
+    <div class="panel">
+      <div>
+        <h3>Reading</h3>
+        <p class="small muted">One book at a time. It shows up at bedtime and in free time.</p>
+      </div>
+      <form class="tmr two" id="bookForm">
+        <input type="text" id="bookNow" placeholder="The book by your bed" aria-label="The book you are reading">
+        <button class="btn small" type="submit">Finished</button>
+      </form>
+      <ul class="notes" id="bookList"></ul>
+    </div>
+
+    <div class="panel">
+      <h3>Your times</h3>
+      <div class="trio">
+        <div class="field"><label for="wakeTime">Up</label><input type="time" id="wakeTime" value="06:30"></div>
+        <div class="field"><label for="phoneTime">Phone out</label><input type="time" id="phoneTime" value="21:00"></div>
+        <div class="field"><label for="bedTime">In bed</label><input type="time" id="bedTime" value="22:30"></div>
+      </div>
+      <p class="small muted" id="sleepCalc"></p>
+      <div class="switch">
+        <div class="txt"><b>Travel mode</b><br><span class="small muted">Every day starts as a minimum day until you turn this off.</span></div>
+        <button class="toggle" role="switch" id="travelMode" aria-checked="false" aria-label="Travel mode"></button>
+      </div>
+      <div>
+        <button class="btn ghost small" id="icsBtn">Add reminders to Calendar</button>
+        <p class="small muted" id="icsMsg" style="margin-top:6px">A web app can't ring by itself. This adds alerts for phone out, bedtime, the Friday ship and the Sunday review to your calendar, at the times above.</p>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>Blocks</h3>
+      <p class="small muted">One new habit every two weeks. If the current block doesn't hold, push the next one back a week here.</p>
+      <div id="blockList" class="blocks"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Body numbers</h3>
+      <div class="pair">
+        <div class="field"><label for="weightGoal">Weight goal (kg)</label><input type="number" id="weightGoal" step="0.5" inputmode="decimal" placeholder="65"></div>
+        <div class="field"><label for="poolLen">Pool length (m)</label><input type="number" id="poolLen" min="5" max="100" inputmode="numeric" placeholder="25"></div>
+      </div>
+      <div class="field"><label for="weightToday">Weigh-in (Sunday morning)</label><input type="number" id="weightToday" step="0.1" inputmode="decimal" placeholder="kg"></div>
+    </div>
+
+    <div class="panel">
+      <div>
+        <h3>Extras</h3>
+        <p class="small muted">Optional yes/no items. They don't count toward a block.</p>
+      </div>
+      <div class="switch">
+        <div class="txt"><b>Showed up</b><br><span class="small muted">First move on something I was avoiding</span></div>
+        <button class="toggle" role="switch" data-extra="showedUp" aria-checked="false" aria-label="Track Showed up"></button>
+      </div>
+      <div class="switch">
+        <div class="txt"><b>Courage rep</b><br><span class="small muted">One small social stretch</span></div>
+        <button class="toggle" role="switch" data-extra="courage" aria-checked="false" aria-label="Track Courage rep"></button>
+      </div>
+    </div>
+
+    <details class="panel" id="menuDetails">
+      <summary>Free-time menu <span class="muted small mono" id="menuCount"></span></summary>
+      <p class="small muted">What "Got free time?" on Today draws from. Remove what you'd never do, add what you would.</p>
+      <div class="pool" id="menuList"></div>
+      <form class="form" id="menuForm">
+        <div class="field"><label for="mName">Add one</label><input type="text" id="mName" required placeholder="Practise one song on the guitar"></div>
+        <div class="chips three" id="mMins" role="group" aria-label="How long it takes">
+          <button type="button" data-mmins="10" aria-pressed="true">10 min</button>
+          <button type="button" data-mmins="30" aria-pressed="false">30 min</button>
+          <button type="button" data-mmins="60" aria-pressed="false">1 h +</button>
+        </div>
+        <div class="row"><button class="btn small" type="submit">Add to menu</button></div>
+      </form>
+    </details>
+
+    <details class="panel" id="editDetails">
+      <summary>Edit the wording of your anchors</summary>
+      <p class="small muted">Change the words to match your real routine. The number of habits stays: new ones only come from the blocks. {wake}, {phone} and {bed} are replaced by your times.</p>
+      <div id="habitEdit" class="hedit"></div>
+    </details>
+
+    <div class="panel">
+      <div>
+        <h3>Backup</h3>
+        <p class="small muted">Everything lives on this phone only. Save a backup every couple of weeks, to Files or iCloud Drive.</p>
+        <p class="small" id="backupAge"></p>
+      </div>
+      <div class="row">
+        <button class="btn" id="exportBtn">Save backup</button>
+        <label class="btn ghost" for="importFile">Restore</label>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+      </div>
+      <p class="saved" id="backupMsg"></p>
+    </div>
+
+    <details class="panel">
+      <summary>Install on your iPhone</summary>
+      <ol class="steps small">
+        <li>Open this page in Safari.</li>
+        <li>Tap Share, then Add to Home Screen, then Add.</li>
+        <li>Open Anchors from the home screen once while online. After that it works in airplane mode.</li>
+      </ol>
+    </details>
+
+    <details class="panel">
+      <summary>The six rules for chapter 1</summary>
+      <ol class="steps small">
+        <li>Wake time is fixed, bedtime follows.</li>
+        <li>Eat like it is training: three meals plus a snack, protein at each.</li>
+        <li>Swimming is the sport for this chapter.</li>
+        <li>Mornings are small.</li>
+        <li>One thing shipped every Friday.</li>
+        <li>No new plans until 27 December. Only follow.</li>
+      </ol>
+    </details>
+    <p class="small muted center" id="version"></p>
+  </section>
+</div>
+
+<button class="stuck" id="stuckBtn" aria-haspopup="dialog">Stuck?</button>
+
+<div class="sheet" id="stuckSheet" role="dialog" aria-modal="true" aria-labelledby="stuckTitle" hidden>
+  <div class="sheet-in">
+    <div class="row between">
+      <h2 id="stuckTitle">Unstick, 3 minutes</h2>
+      <button class="navbtn" id="stuckClose" aria-label="Close">×</button>
+    </div>
+    <div id="stuckSteps">
+      <p class="proof small" id="proof" hidden></p>
+      <ol class="steps">
+        <li>Three physiological sighs: two inhales through the nose, one long exhale through the mouth.</li>
+        <li>Say it: "You're excited. You can do this."</li>
+        <li>Write one absurdly small objective.</li>
+      </ol>
+      <div class="field"><label for="objective">The tiny objective</label><input type="text" id="objective" placeholder="Open the file and write the title"></div>
+      <ol class="steps" start="4">
+        <li>Phone on Do Not Disturb, face down, out of reach.</li>
+        <li>Start the timer. You may stop when it rings.</li>
+      </ol>
+      <div class="chips three" id="timerChips" role="group" aria-label="Timer length">
+        <button data-tmins="10" aria-pressed="false">10 min</button>
+        <button data-tmins="25" aria-pressed="true">25 min</button>
+        <button data-tmins="50" aria-pressed="false">50 min</button>
+      </div>
+      <button class="btn wide" id="timerStart">Start 25 minutes</button>
+    </div>
+    <div id="timerView" hidden>
+      <p class="eyebrow">Working on</p>
+      <p class="objective" id="timerObjective"></p>
+      <p class="clock mono" id="timerClock">25:00</p>
+      <p class="small muted center" id="timerEnds"></p>
+      <div class="row center">
+        <button class="btn ghost" id="timerStop">Stop</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<nav class="tabs" aria-label="Sections">
+  <div class="in">
+    <a href="#today" data-tab="today">Today</a>
+    <a href="#journal" data-tab="journal">Journal</a>
+    <a href="#body" data-tab="body">Body</a>
+    <a href="#week" data-tab="week" id="weekTab">Progress</a>
+    <a href="#more" data-tab="more">More</a>
+  </div>
+</nav>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
